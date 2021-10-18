@@ -11,14 +11,16 @@ export const SSNInput = () => {
     const maxLength = [3, 2, 4];
 
     useEffect(() => {
-        if (values[lastIndexFocused].length >= maxLength[lastIndexFocused] && lastIndexFocused <= 2) {
-            setLastIndexFocused(lastIndexFocused+1);
+        if(refs[refs.length-1] != null && refs[refs.length-1].isFocused()) return;
+        for (let i = refs.length-2; i >= 0; i--) {
+            if(refs[i] != null &&  refs[i].current.isFocused()) {
+                if(values[i].length >= maxLength[i]) {
+                    refs[i+1].current.focus();
+                    return;
+                }
+            }
         }
     }, [values])
-
-    useEffect(() => {
-        refs[lastIndexFocused].current.focus();
-    }, [lastIndexFocused])
 
     let inputs = refs.map((value, index) => {
         return (

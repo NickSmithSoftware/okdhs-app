@@ -11,24 +11,26 @@ export const CaseInput = () => {
     const maxLength = [1, 6];
 
     const inputs = refs.map((value, index) => {
-        <TextInput
-            key={index}
-            style={{...s.ssDigitContainer, flex: maxLength[index]}} 
-            keyboardType={"number-pad"}
-            autoFocus={index == 0}
-            maxLength={maxLength[index]}
-            onFocus={() => {
-                setLastIndexFocused(index);
-            }}
-            selectTextOnFocus={true}
-            onChangeText={(text) => {
-                let temporaryArray = [...values];
-                temporaryArray[index] = text;
-                setValues(temporaryArray)
-            }}
-            value={values[index]}
-            ref={value}
-        />
+        return (
+            <TextInput
+                key={index}
+                style={{...s.ssDigitContainer, flex: maxLength[index]}} 
+                keyboardType={"number-pad"}
+                autoFocus={index == 0}
+                maxLength={maxLength[index]}
+                onFocus={() => {
+                    setLastIndexFocused(index);
+                }}
+                selectTextOnFocus={true}
+                onChangeText={(text) => {
+                    let temporaryArray = [...values];
+                    temporaryArray[index] = text;
+                    setValues(temporaryArray)
+                }}
+                value={values[index]}
+                ref={value}
+            />
+        )
     });
 
     return (
