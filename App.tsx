@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import React, {useRef} from 'react';
+import { View, Text, Button } from 'react-native';
 import { CaseInput } from './components/CaseInput';
 import { ClientIdInput } from './components/ClientIdInput';
 import { SSNInput } from './components/SSNInput';
@@ -8,7 +8,14 @@ import {s} from './styles';
 
 // @import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
 
+interface Form {
+  ssn: string;
+  cn: string;
+  cid: string;
+}
+
 const App = () => {
+  const formRef = useRef<Form>()
   return (
     <View style={s.layout}>
 
@@ -19,19 +26,21 @@ const App = () => {
 
       <View>
         <Text style={s.h3Light}>Social Security Number</Text>
-        <SSNInput />
+        <SSNInput ref={formRef.ssn} />
 
         <Text style={s.h3Light}>Case Number</Text>
-        <CaseInput />
+        <CaseInput ref={formRef.cn} />
 
         <Text style={s.h3Light}>Client Id</Text>
-        <ClientIdInput />
+        <ClientIdInput ref={formRef.cid} />
       </View>
 
       <View>
-        <TouchableOpacity style={s.button}>
+        <Button style={s.button} onPress={() => {
+          
+        }}>
           <Text style={{...s.h3Light, fontWeight: 'bold'}}>Select Files</Text>
-        </TouchableOpacity>
+        </Button>
       </View>
 
     </View>
