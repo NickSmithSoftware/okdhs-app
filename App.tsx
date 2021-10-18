@@ -1,21 +1,41 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
+import { CaseInput } from './components/CaseInput';
+import { ClientIdInput } from './components/ClientIdInput';
+import { SSNInput } from './components/SSNInput';
 
-export default function App() {
+import {s} from './styles';
+
+// @import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+
+const App = () => {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
+    <View style={s.layout}>
+
+      <View>
+        <Text style={s.h1Light}>OKDHS Live! Upload</Text>
+        <Text style={s.h6Light}>2 of 3 forms of verification required*</Text>
+      </View>
+
+      <View>
+        <Text style={s.h3Light}>Social Security Number</Text>
+        <SSNInput />
+
+        <Text style={s.h3Light}>Case Number</Text>
+        <CaseInput />
+
+        <Text style={s.h3Light}>Client Id</Text>
+        <ClientIdInput />
+      </View>
+
+      <View>
+        <TouchableOpacity style={s.button}>
+          <Text style={{...s.h3Light, fontWeight: 'bold'}}>Select Files</Text>
+        </TouchableOpacity>
+      </View>
+
     </View>
-  );
+  )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
