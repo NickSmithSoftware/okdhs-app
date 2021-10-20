@@ -1,50 +1,168 @@
-import React, {useRef} from 'react';
-import { View, Text, Button } from 'react-native';
-import { CaseInput } from './components/CaseInput';
-import { ClientIdInput } from './components/ClientIdInput';
-import { SSNInput } from './components/SSNInput';
+import React, {useEffect, useRef, useState} from 'react';
+import { View, StyleSheet } from 'react-native';
+import { Button, Input, Text, ThemeProvider } from 'react-native-elements';
+import { Icon } from 'react-native-elements/dist/icons/Icon';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import {s} from './styles';
+import {filestack} from 'filestack-react';
 
 // @import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
 
-interface Form {
-  ssn: string;
-  cn: string;
-  cid: string;
-}
-
 const App = () => {
-  const formRef = useRef<Form>()
+  const client = useRef();
+  const [form, setForm] = useState({
+    ssn: "",
+    cn: "",
+    cid: ""
+  })
+
+  useEffect(() => {
+    const apiKey = 'APIKEY';
+    client.current = filestack.init(apiKey);
+    const onProgress = (e) => {
+      doSomething();
+    };
+
+    document.querySelector('input').addEventListener('change', (event) => {
+      const files = event.target.files[0];
+      const token = {};
+      const cancel = document.getElementById('cancel');
+      const pause = document.getElementById('pause');
+      const resume = document.getElementById('resume');
+  
+      [cancel, resume, pause].forEach((btn) => {
+        const id = btn.id;
+        btn.addEventListener('click', () => {
+          token[id]();
+        });
+      });
+  
+      client.upload(files, { onProgress }, {}, token)
+        .then(res => {
+          console.log('success: ', res)
+        })
+        .catch(err => {
+          console.log(err)
+        });
+    });
+  });
+  
+  }, [])
+
   return (
-    <View style={s.layout}>
+    <SafeAreaProvider>
+      <View style={styles.layout}>
 
-      <View>
-        <Text style={s.h1Light}>OKDHS Live! Upload</Text>
-        <Text style={s.h6Light}>2 of 3 forms of verification required*</Text>
-      </View>
+        <Text h1>OKDHS Live! App </Text>
 
-      <View>
-        <Text style={s.h3Light}>Social Security Number</Text>
-        <SSNInput ref={formRef.ssn} />
+        <View style={styles.view}>
+          <Text style={styles.mainWarning}>2 of 3 required</Text>
+          <Input
+            placeholder="Social Security Number"
+            secureTextEntry
+            maxLength={9}
+            style={styles.input}
+            rightIcon={
+              <Icon
+                name="visibility"
+                size={24}
+                color='grey'
+              />
+            }
+          />
+          <Input
+            placeholder="Case Number"
+            secureTextEntry
+            maxLength={7}
+            style={styles.input}
+            rightIcon={
+              <Icon
+                name="visibility"
+                size={24}
+                color='grey'
+              />
+            }
+          />
+          <Input
+            placeholder="Case ID Number"
+            secureTextEntry
+            maxLength={9}
+            style={styles.input}
+            rightIcon={
+              <Icon
+                name="visibility"
+                size={24}
+                color='grey'
+              />
+            }
+          />
+        </View>
 
-        <Text style={s.h3Light}>Case Number</Text>
-        <CaseInput ref={formRef.cn} />
+        <View style={styles.view}>
+          <Button
+            buttonStyle={styles.buttonStyle}
+            containerStyle={styles.buttonContainer}
+            title="Upload Picture" 
+            type="solid" 
+            icon={
+              <Icon
+                name="photo-camera"
+                size={24}
+                color='white'
+              />}
+            iconRight
+            raised
+            titleStyle={styles.buttonText}
+          />
+        </View>
 
-        <Text style={s.h3Light}>Client Id</Text>
-        <ClientIdInput ref={formRef.cid} />
-      </View>
-
-      <View>
-        <Button style={s.button} onPress={() => {
-          
-        }}>
-          <Text style={{...s.h3Light, fontWeight: 'bold'}}>Select Files</Text>
-        </Button>
-      </View>
-
-    </View>
+        </View>
+    </SafeAreaProvider>
   )
 }
+
+const styles = StyleSheet.create({
+  buttonContainer: {
+    width: '75%',
+    borderRadius: 35,
+  },
+  buttonStyle: {
+    display: 'flex',
+    justifyContent: 'space-evenly',
+  },
+  buttonText: {
+    fontSize: 20,
+
+  },
+  input: {
+    fontSize: 20,
+    marginVertical: 5,
+    textAlign: 'center',
+  },
+  layout: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-around',
+    alignContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+    textAlignVertical: 'center',
+  },
+  mainWarning: {
+    color: 'red',
+    fontSize: 20,
+    marginBottom: 15,
+    fontStyle: 'italic',
+    fontWeight: '100',
+    
+  },
+  view: {
+    width: '80%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
+})
 
 export default App;
