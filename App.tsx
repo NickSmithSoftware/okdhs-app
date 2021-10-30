@@ -5,21 +5,19 @@ import { Button, Input, Text, Icon} from 'react-native-elements';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { FileSelector } from './components/file-selector';
 
-import axios from 'axios';
-
 import {validate} from './Validate';
 
-import {Storage} from '@google-cloud/storage'
+//import {Storage} from '@google-cloud/storage'
 
 // @import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
 
-const uploadDocuments = async (images: ImageInfo[]) => {
-  const storage = new Storage({keyFilename: 'thingy.json'});
-  const bucket = storage.bucket('okdhs-app');
-  return await Promise.all(images.map((image) => {
-    bucket.upload(image.uri, {resumable: false})
-  }));
-}
+// const uploadDocuments = async (images: ImageInfo[]) => {
+//   const storage = new Storage({keyFilename: 'thingy.json'});
+//   const bucket = storage.bucket('okdhs-app');
+//   return await Promise.all(images.map((image) => {
+//     bucket.upload(image.uri, {resumable: false})
+//   }));
+// }
 
 const App = () => {
   const [ssn, cn, cid] = [useRef<TextInput>(null), useRef<TextInput>(null), useRef<TextInput>(null)];
@@ -158,14 +156,14 @@ const App = () => {
             raised
             titleStyle={styles.buttonText}
             onPress={() => {
-              uploadDocuments(toUpload).then((response) => {
+              /*uploadDocuments(toUpload).then((response) => {
                 console.log(response);
                 setToUpload([]);
               }).catch((error) => {
                 console.error(error);
               }).finally(() => {
 
-              })
+              })*/
             }}
           />
             :
