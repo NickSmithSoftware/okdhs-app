@@ -8,25 +8,22 @@
     "eject": "expo eject"
   },
   "dependencies": {
-    "@google-cloud/storage": "^5.15.3",
-    "axios": "^0.24.0",
-    "expo": "~42.0.1",
-    "expo-image-picker": "~10.2.2",
-    "expo-status-bar": "~1.0.4",
+    "expo": "^43.0.1",
+    "expo-image-picker": "^11.0.3",
+    "expo-status-bar": "^1.1.0",
     "fast-crc32c": "^2.0.0",
-    "filestack-react": "^4.0.1",
-    "react": "16.13.1",
-    "react-dom": "16.13.1",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-42.0.0.tar.gz",
+    "firebase": "^9.2.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-native": "^0.64.2",
     "react-native-elements": "^3.4.2",
-    "react-native-fs": "^2.18.0",
-    "react-native-safe-area-context": "3.2.0",
+    "react-native-safe-area-context": "^3.3.2",
     "react-native-web": "^0.17.5"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
-    "@types/react": "~16.9.35",
-    "@types/react-native": "~0.63.2",
+    "@types/react": "^17.0.33",
+    "@types/react-native": "^0.66.1",
     "typescript": "~4.0.0"
   },
   "private": true

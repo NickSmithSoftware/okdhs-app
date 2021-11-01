@@ -1,32 +1,72 @@
 import { ImageInfo } from 'expo-image-picker/build/ImagePicker.types';
 import React, {useEffect, useRef, useState} from 'react';
-import { View, StyleSheet, TextInput } from 'react-native';
+import { View, StyleSheet, TextInput, Platform, LogBox } from 'react-native';
 import { Button, Input, Text, Icon} from 'react-native-elements';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { FileSelector } from './components/file-selector';
 
 import {validate} from './Validate';
 
-//import {Storage} from '@google-cloud/storage'
-
 // @import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
 
-// const uploadDocuments = async (images: ImageInfo[]) => {
-//   const storage = new Storage({keyFilename: 'thingy.json'});
-//   const bucket = storage.bucket('okdhs-app');
-//   return await Promise.all(images.map((image) => {
-//     bucket.upload(image.uri, {resumable: false})
-//   }));
-// }
+import {initializeApp} from 'firebase/app';
+import {getStorage, ref, uploadBytes} from 'firebase/storage';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDsU4BLy0CedXE6zQVLGgAufFQzudPTiaY",
+  authDomain: "okdhs-app.firebaseapp.com",
+  projectId: "okdhs-app",
+  storageBucket: "okdhs-app.appspot.com",
+  messagingSenderId: "70413447694",
+  appId: "1:70413447694:web:2104b438cc874ceb39025f",
+  measurementId: "G-LESXHTQNTN"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const storage = getStorage(app);
+
+// Initialize MongoDB
+const config = {
+  
+}
+
+LogBox.ignoreLogs(['Setting a timer for a long period']);
+
+const uploadFiles = async (images: ImageInfo[], social: string) => {
+  let blobPromises: Promise<Blob>[] = [];
+  const imageUri = (uri: string) : string => {
+    //uri.replace('file://', '')
+    return Platform.OS == "ios" ? uri : uri;
+  }
+  images.forEach((image) => {
+    blobPromises.push(new Promise((resolve, reject) => {
+      fetch(imageUri(image.uri)).then((response) => {
+        resolve(response.blob());
+      }).catch(reject);
+    }))
+  })
+
+  let blobs: Blob[] = [];
+  try {
+    blobs = await Promise.all(blobPromises);
+    const results = blobs.map((blob, index) => {
+      const name = images[index].uri.substring(images[index].uri.lastIndexOf('/') + 1);
+      let storageRef = ref(storage,  `${social}/${name}`);
+      return uploadBytes(storageRef, blob).then().catch();
+    });
+    const final = await Promise.all(results);
+    return final;
+  } catch (err) {
+  }
+}
+
+const defForm = {ssn: "", cn: "", cid: ""};
 
 const App = () => {
   const [ssn, cn, cid] = [useRef<TextInput>(null), useRef<TextInput>(null), useRef<TextInput>(null)];
   const refs = [ssn, cn, cid];
-  const [form, setForm] = useState({
-    ssn: "",
-    cn: "",
-    cid: ""
-  })
+  const [form, setForm] = useState(defForm);
   const [formValidity, setFormValidity] = useState([
     false, 
     false, 
@@ -36,8 +76,14 @@ const App = () => {
   const [overlayVisible, setOverlayVisible] = useState(false);
   const [toUpload, setToUpload] = useState<ImageInfo[]>([]);
 
+  // const [realm, setRealm] = useState<Realm>(null);
+
   useEffect(() => {
-  
+    // const init = async () => {
+    //   return await Realm.open(config);
+    // }
+
+    // init().then((r) => setRealm(r)).catch();
   }, [])
 
   const maxLengths = [9, 7, 9];
@@ -66,6 +112,7 @@ const App = () => {
             secureTextEntry
             maxLength={ssnMax}
             style={styles.input}
+            autoCompleteType="off"
             rightIcon={
               <Icon
                 name="visibility"
@@ -88,6 +135,7 @@ const App = () => {
             secureTextEntry
             maxLength={cnMax}
             style={styles.input}
+            autoCompleteType="off"
             rightIcon={
               <Icon
                 name="visibility"
@@ -105,6 +153,7 @@ const App = () => {
             ref={cn}
           />
           <Input
+            autoCompleteType="off"
             placeholder="Case ID Number"
             secureTextEntry
             maxLength={cidMax}
@@ -156,14 +205,15 @@ const App = () => {
             raised
             titleStyle={styles.buttonText}
             onPress={() => {
-              /*uploadDocuments(toUpload).then((response) => {
-                console.log(response);
-                setToUpload([]);
-              }).catch((error) => {
-                console.error(error);
-              }).finally(() => {
-
-              })*/
+              if(submittable) {
+                uploadFiles(toUpload, form.ssn).then(() => {
+                  //console.log("SUCCESS");
+                  setToUpload([]);
+                  setForm(defForm);
+                }).catch(error => {
+                  //console.log("ERROR");
+                });
+              }
             }}
           />
             :

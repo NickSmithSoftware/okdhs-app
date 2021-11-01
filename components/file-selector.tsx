@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {View, Platform} from 'react-native';
+import {View, Platform, StyleSheet} from 'react-native';
 import {Button, Overlay, Icon, Image, Tab, TabView, Chip, Badge} from 'react-native-elements';
 import * as ImagePicker from 'expo-image-picker';
 import { ImageInfo } from 'expo-image-picker/build/ImagePicker.types';
@@ -25,8 +25,7 @@ export const FileSelector = (props: FileSelectorProps) => {
           quality: 1,
           base64: false
         });
-    
-        console.log(result);
+
     
         if (!result.cancelled) {
           setImages([...images, result]);
@@ -40,8 +39,6 @@ export const FileSelector = (props: FileSelectorProps) => {
             quality: 1,
             base64: false,
         });
-
-        console.log(result);
         
         if(!result.cancelled) {
             setImages([...images, result]);
@@ -51,12 +48,19 @@ export const FileSelector = (props: FileSelectorProps) => {
     useEffect(() => {
       (async () => {
         if (Platform.OS !== 'web') {
-          const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-          if (status !== 'granted') {
-            props.setIsVisible(false);
-            alert('Sorry, we need camera roll permissions to make this work!');
+            let permissionPromises = [
+                await ImagePicker.requestMediaLibraryPermissionsAsync(),
+                await ImagePicker.getCameraPermissionsAsync()
+            ];
+            const responses = await Promise.all(permissionPromises);
+            responses.forEach(response => {
+                const {status} = response;
+                if(status !== 'granted') {
+                    props.setIsVisible(false);
+                    alert("App needs permissions to function!!");
+                }
+            })
           }
-        }
       })();
     }, []);
 
@@ -119,20 +123,22 @@ export const FileSelector = (props: FileSelectorProps) => {
     }
   ];
 
-  const overlayStyle = {
-      width: '75%',
-      display: 'flex',
-      alignItems: 'center',
-      borderRadius: 35,
-      paddingVertical: 20
-  }
+  const overlayStyle = StyleSheet.create({
+      overlay: {
+        width: '75%',
+        display: 'flex',
+        alignItems: 'center',
+        borderRadius: 35,
+        paddingVertical: 20
+      }
+  });
   
   const containerStyle = props.buttonContainer;
   const titleStyle = props.titleStyle;
 
   return (
       <View>
-          <Overlay overlayStyle={overlayStyle} isVisible={props.isVisible} onBackdropPress={() => {}}>
+          <Overlay overlayStyle={overlayStyle.overlay} isVisible={props.isVisible} onBackdropPress={() => {}}>
                 <Image
                     source={images[index]? {uri: images[index].uri} : {}}
                     style={images[index]? {width: 240, height: 320, borderRadius: 20} : {}}
