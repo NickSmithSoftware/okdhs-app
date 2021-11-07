@@ -1,1 +1,0 @@
-declare module 'filestack-react';
